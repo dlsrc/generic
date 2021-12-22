@@ -87,14 +87,14 @@ trait NamedContainer {
 				\unlink($file);
 				Error::log(
 					Core::message('e_type', $file, \gettype(self::$_container[$name])),
-					Error::DOMAIN
+					Code::Domain
 				);
 			}
 			else {
 				\unlink($file);
 				Error::log(
 					Core::message('e_class', $file, \get_class(self::$_container[$name]), static::class),
-					Error::DOMAIN
+					Code::Domain
 				);
 			}
 		}

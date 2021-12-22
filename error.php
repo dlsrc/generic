@@ -8,6 +8,8 @@
 
     ------------------------------------------------------------------------
 
+	interface dl\ErrorCodifier
+	enum dl\Code
 	final class dl\Error
 
     ------------------------------------------------------------------------
@@ -18,44 +20,42 @@
 declare(strict_types=1);
 namespace dl;
 
+interface ErrorCodifier {
+	public function isFatal(): bool;
+}
+
+enum Code: int implements ErrorCodifier {
+	// VALUE RANGE 0 - 49
+	case Success   =  0; // Ошибки отсутствуют.
+	case Error     =  1; // Фатальная ошибка
+	case Warning   =  2; // Общая нефатальная ошибка, предупреждение
+	case Fatal     =  3; // Фатальная пользовательская ошибка
+	case Parse     =  4; // Ошибка парсера
+	case User      =  5; // Пользовательская нефатальная ошибка
+	case Noclass   =  6; // Описание класса, интерфейса, трейта, перечисления отсутствует
+	case Noobject  =  7; // Ошибка при инстанцировании объекта
+	case Notice    =  8; // Предупреждение
+	case Mode      =  9; // Попытка выполнить код в неверном режиме
+	case Ext       = 10; // Не загружено необходимое расширение
+	case Domain    = 11; // Неверная область использования значения
+	case Argument  = 12; // Неверный аргумент
+	case Exception = 13; // Исключение (для exception_handler)
+	case Logic     = 14; // Ошибка в логике
+	case Range     = 15; // Запрос несуществующего индекса
+	case NET       = 16; // Ошибка сети
+	case TCP       = 17; // Ошибка tcp-подключения
+
+
+	public function isFatal() {
+		return match ($this) {
+			self::Error, self::Fatal, self::Parse, self::Noclass => true,
+			default => false,
+		};
+	}
+}
+
 final class Error implements CallableState {
 	use SetStateCall;
-
-	/**
-	* Основные коды ошибок.
-	* Остальные задаются в соответствующих библиотеках.
-	*/
-	public const SUCCESS  = 0;  // Ошибки отсутствуют.
-	public const ERROR    = 1;  // Фатальная ошибка
-	public const WARNING  = 2;  // Общая нефатальная ошибка
-	public const FATAL    = 3;  // Фатальная пользовательская ошибка
-	public const PARSE    = 4;  // Ошибка парсера
-	public const USER     = 5;  // Пользовательская ошибка
-	public const LOGIC    = 6;  // Ошибка в логике программы
-	public const BADCALL  = 7;  // Вызов неправильной (неизвестной) функции или метода
-	public const NOTICE   = 8;  // Предупреждение
-	public const DOMAIN   = 9;  // Неверная область использования значения
-	public const ARGUMENT = 10; // Неверный аргумент
-	public const LENGTH   = 11; // Превышение допустимой длины
-	public const RANGE    = 12; // Запрос несуществующего индекса
-	public const NET      = 13; // Ошибка сети
-	public const TCP      = 14; // Ошибка tcp-подключения
-	public const MODE     = 15; // Попытка запуска программы в неверном режиме
-	public const NOCLASS  = 17; // Описание класса, интерфейса, перечисления отсутствует
-	public const FILENAME = 18; // Неверное имя файла
-	public const MAKEDIR  = 19; // Ошибка при создании директории
-	public const MAKEFILE = 20; // Ошибка при создании файла
-	public const COPY     = 21; // Ошибка при копировании файла
-	public const RENAME   = 22; // Ошибка при переименовании файла
-	public const NODIR    = 23; // Директория не существует
-	public const NOFILE   = 24; // Файл не существует
-	public const RMDIR    = 25; // Не удалось удалить директорию
-	public const UNLINK   = 26; // Не удалось удалить файл
-	public const CHMOD    = 27; // Ошибка при изменении режима доступа к папкам и файлам
-	public const SENDMAIL = 28; // Ошибка при передаче письма на отправку
-	public const NOOBJECT = 29; // Ошибка при инстанцировании объекта
-	public const SYSTEM   = 30; // Неправильные пастройки среды исполнения
-	public const EXT      = 31; // Не загружено необходимое расширение
 
 	/**
 	* Список объектов dl\Error.
@@ -93,11 +93,6 @@ final class Error implements CallableState {
 	* Рандомизатор - отвечает за частоту логирования ошибок
 	*/
 	private static int $_rand = 1;
-	
-	/**
-	* Дата первого появления ошибки в формате "YYYY-mm-dd HH:ii:ss".
-	*/
-	public readonly string $date;
 
 	/**
 	* Идентификатор ошибки на основе её сигнатуры
@@ -125,19 +120,34 @@ final class Error implements CallableState {
 	public readonly int $line;
 
 	/**
-	* Код ошибки
+	* Тип ошибки приведенный к стандартному коду,
 	*/
-	public readonly int $code;
+	public readonly Code $code;
 
 	/**
-	* Тип ошибки
+	* Тип пользовательской ошибки
 	*/
-	public readonly int $type;
+	public readonly ErrorCodifier $type;
+
+	/**
+	* Числовой код ошибки
+	*/
+	public readonly int $errno;
+
+	/**
+	* Флаг фатальной ошибки
+	*/
+	public readonly bool $fatal;
 
 	/**
 	* Отметка времени последнего появления ошибки
 	*/
 	public readonly int $time;
+
+	/**
+	* Дата первого появления ошибки в формате "YYYY-mm-dd HH:ii:ss".
+	*/
+	public readonly string $date;
 
 	/**
 	* Проверить наличие зарегистрированных ошибок
@@ -289,12 +299,12 @@ final class Error implements CallableState {
 	/**
 	* Зарегистрировать новый объект ошибки в журнале и вернуть его.
 	* mesg  - сообшение об ошибке
-	* code  - Код ошибки
+	* type  - Код ошибки
 	* fatal - для пользовательских ошибок флаг фатальной ошибки,
 	* установить в TRUE, если при возникновении ошибки,
 	* согласно логике программы, дальнейшее её выполнение бессмысленно.
 	*/
-	public static function log(string $mesg, int $type = self::USER, bool $fatal = false): self {
+	public static function log(string $mesg, ErrorCodifier $type = Code::User, bool $fatal = false): static {
 		$trace = \debug_backtrace();
 		$debug = [];
 
@@ -304,14 +314,15 @@ final class Error implements CallableState {
 			}
 		}
 
-		$trace = [
-			'type'    => $type,
-			'fatal'   => $fatal,
-			'message' => $mesg,
-			'file'    => $debug[0]['file'],
-			'line'    => $debug[0]['line'],
-			'context' => '[ThrownByUser]',
-		];
+		$trace = [];
+		$trace['errno']   = $type->value;
+		$trace['type']    = $type;
+		$trace['fatal']   = $type->isFatal() or $fatal;
+		$trace['code']    = self::setCode($type->value, $trace['fatal']);
+		$trace['message'] = $mesg;
+		$trace['file']    = $debug[0]['file'];
+		$trace['line']    = $debug[0]['line'];
+		$trace['context'] = '[ThrownByUser]';
 
 		$trace['id'] = self::makeId($trace);
 
@@ -361,52 +372,54 @@ final class Error implements CallableState {
 		$trace['message'] = $mesg.\PHP_EOL.$message;
 
 		self::$_log[$trace['id']] = new Error($trace);
-
 		self::fatal(self::$_log[$trace['id']]);
-
 		return self::$_log[$trace['id']];
 	}
 
 	/**
 	* Выбросить исключение, если есть зарегистрированные ошибки.
-	* При вызове без параметров,
-	* исключение выбрасывается для последней ошибки в журнале.
+	* При вызове без параметров, исключение выбрасывается
+	* для последней ошибки в журнале.
 	* Если переданы коды(код) ошибок, то исключение будет брошено
 	* для первой совпавшей с одним из кодов ошибки.
 	* Если ошибки есть, но ни одна не совпала ни с одним из кодов,
 	* исключение выброшено не будет.
 	*/
-	public static function halt(int ...$code): void {
+	public static function halt(ErrorCodifier ...$code): void {
 		if (empty(self::$_log)) {
 			return;
 		}
 
 		if (empty($code)) {
 			$id = \array_key_last(self::$_log);
-			throw new Failure(self::$_log[$id]);		
+			self::failure(self::$_log[$id]);		
 		}
 
 		foreach (self::$_log as $e) {
-			if (\in_array($e->code, $code)) {
-				throw new Failure($e);
+			if (\in_array($e->type, $code)) {
+				self::failure($e);
 			}
 		}
+	}
+
+	private static function failure(Error $e): never {
+		throw new Failure($e);
 	}
 
 	/**
 	* Обработчик ошибок
 	*/
 	public static function error_handler(int $errno, string $errstr, string $errfile, int $errline): void {
-		$trace = [
-			'type'    => $errno,
-			'fatal'   => true,
-			'message' => $errstr,
-			'file'    => $errfile,
-			'line'    => $errline,
-			'context' => '[ErrorHandler]',
-		];
-
-		$trace['id'] = self::makeId($trace);
+		$trace = [];
+		$trace['errno']   = $errno;
+		$trace['type']    = self::convertError($errno);
+		$trace['fatal']   = $trace['type']->isFatal();
+		$trace['code']    = $trace['type'];
+		$trace['message'] = $errstr;
+		$trace['file']    = $errfile;
+		$trace['line']    = $errline;
+		$trace['context'] = '[ErrorHandler]';
+		$trace['id']      = self::makeId($trace);
 
 		if (!isset(self::$_log[$trace['id']])) {
 			self::$_log[$trace['id']] = new Error($trace);
@@ -418,38 +431,27 @@ final class Error implements CallableState {
 	* Обработчик исключений
 	*/
 	public static function exception_handler(\Throwable $e): void {
-		$code = $e->getCode();
-
 		if ($e instanceof Failure) {
-			if (\in_array($code, [self::WARNING, self::NOTICE, self::USER,])) {
-				return;
+			if ($e->error->isFatal()) {
+				exit;
 			}
 
-			exit;
-		}
-
-		$trace = [
-			'type'    => $code,
-			'fatal'   => true,
-			'message' => $e->getMessage(),
-			'file'    => $e->getFile(),
-			'line'    => $e->getLine(),
-		];
-
-		$trace['id'] = self::makeId($trace);
-
-		if (isset(self::$_log[$trace['id']])) {
 			return;
 		}
 
-		if (!$code) {
-			$trace['code'] = match ($e::class) {
-				'ArgumentCountError', 'ArithmeticError', 'DivisionByZeroError',
-				'Error', 'TypeError', 'UnhandledMatchError', 'ValueError' => \E_ERROR,
-				'CompileError', 'ParseError' => \E_PARSE,
-				'AssertionError' => \E_WARNING,
-				default => $code,
-			};
+		$trace = [];
+		$trace['errno']   = $e->getCode();
+		$trace['type']    = self::convertException($e);
+		$trace['fatal']   = $trace['type']->isFatal();
+		$trace['code']    = $trace['type'];
+		$trace['message'] = $e->getMessage();
+		$trace['file']    = $e->getFile();
+		$trace['line']    = $e->getLine();
+		$trace['context'] = '[ErrorHandler]';
+		$trace['id']      = self::makeId($trace);
+
+		if (isset(self::$_log[$trace['id']])) {
+			return;
 		}
 
 		$trace['context'] = '[ExceptionHandler: '.$e::class.'] '.$e->getTraceAsString();
@@ -485,8 +487,8 @@ final class Error implements CallableState {
 	* Получить отформатированное строковое представление кода ошибки.
 	*/
 	public function getErrorCode(): string {
-		$code  = (string)$this->code;
-		$type  = (string)$this->type;
+		$code  = (string)$this->code->value;
+		$type  = (string)$this->type->value;
 
 		switch (\mb_strlen($code)) {
 		case 1:
@@ -514,17 +516,13 @@ final class Error implements CallableState {
 		return '[ERROR&nbsp;#'.$code.']';
 	}
 
-	public function updateTime(): void {
-		$this->time = \time();
-	}
-
 	/**
 	* Установить глобальный флаг наличия в списке dl\Error::$_log фатальной ошибки,
 	* если таковая перехвачена обработчикам ошибок или исключений,
 	* или сгенерирована пользователем.
 	*/
 	private static function fatal(self $error): void {
-		if (\in_array($error->code, [self::ERROR, self::FATAL, self::PARSE,])) {
+		if ($error->fatal) {
 			self::$_fatal = true;
 		}
 	}
@@ -533,8 +531,7 @@ final class Error implements CallableState {
 	* Получить идентификатор ошибки
 	*/
 	private static function makeId(array $trace): string {
-		//return md5($trace['message'].'::'.$trace['file'].'::'.$trace['line'].'::'.$trace['type']);
-		return md5($trace['file'].'::'.$trace['line'].'::'.$trace['type']);
+		return md5($trace['file'].'::'.$trace['line'].'::'.$trace['type']->name);
 	}
 
 	/**
@@ -546,13 +543,18 @@ final class Error implements CallableState {
 			return;
 		}
 
-		$e['message'] ??= 'Unknown error';
-		$e['file']    ??= 'External source';
-		$e['line']    ??= 0;
-		$e['context'] = '[LastErrorBeforeListen]';
+		$trace = [];
+		$trace['errno']   = $e['type'] ?? 1;
+		$trace['type']    = self::convertError($trace['errno']);
+		$trace['fatal']   = $trace['type']->isFatal();
+		$trace['code']    = $trace['type'];
+		$trace['message'] = $e['message'] ?? 'Unknown error';
+		$trace['file']    = $e['file'] ?? 'External source';
+		$trace['line']    = $e['line'] ?? 0;
+		$trace['context'] = '[LastErrorBeforeListen]';
+		$trace['id']      = self::makeId($trace);
 
-		$e['id'] = self::makeId($e);
-		self::$_log[$e['id']] ??= new Error($e);
+		self::$_log[$trace['id']] ??= new Error($trace);
 	}
 
 	/**
@@ -563,57 +565,83 @@ final class Error implements CallableState {
 	private function __construct(array $state) {
 		$this->id      = $state['id'];
 		$this->message = $state['message'];
-		
-		if (isset($state['context'])) {
-			$this->context = $state['context'];
-		}
-		else {
-			$this->context = '[UnknownSource]';
-		}
-
-		$this->file = $state['file'];
-		$this->line = $state['line'];
-
-		if (isset($state['code'])) {
-			$this->code = $state['code'];
-		}
-		else {
-			$state['fatal'] ??= false;
-			$this->code = $this->setCode($state['type'], $state['fatal']);
-		}
-
-		if (0 == $state['type']) {
-			$this->type = $this->code;
-		}
-		else {
-			$this->type = $state['type'];
-		}
-
-		if (isset($state['time'])) {
-			$this->time = $state['time'];
-		}
-		else {
-			$this->time = \time();
-		}
-		
-		if (isset($state['date'])) {
-			$this->date = $state['date'];
-		}
-		else {
-			$this->date = \date('Y-m-d H:i:s', $this->time);
-		}
+		$this->context = $state['context'];
+		$this->file    = $state['file'];
+		$this->line    = $state['line'];
+		$this->type    = $state['type'];
+		$this->code    = $state['code'];
+		$this->errno   = $state['errno'];
+		$this->fatal   = $state['fatal'];
+		$this->time    = $state['time'] ?? \time();
+		$this->date    = $state['date'] ?? \date('Y-m-d H:i:s', $this->time);
 	}
 
 	/**
-	* Преобразовать системные коды ошибок.
+	* Приведение к dl\Code.
 	*/
-	private function setCode(int $type, bool $fatal): int {
-		return match ($type) {
-			\E_ERROR, \E_CORE_ERROR, \E_COMPILE_ERROR, \E_USER_ERROR, \E_RECOVERABLE_ERROR => self::ERROR,
-			\E_PARSE => self::PARSE,
-			\E_WARNING, \E_CORE_WARNING, \E_COMPILE_WARNING, \E_USER_WARNING, \E_STRICT, \E_DEPRECATED, \E_USER_DEPRECATED => self::WARNING,
-			\E_NOTICE, \E_USER_NOTICE => self::NOTICE,
-			default => $fatal ? self::FATAL : self::USER,
+	private function setCode(int $type, bool $fatal): Code {
+		$code = self::convertError($type);
+
+		if (Code::User == $code && $fatal) {
+			return Code::Fatal;
+		}
+
+		return $code;
+	}
+
+	/**
+	* Преобразовать системные коды ошибок в dl\Code.
+	*/
+	private static function convertError(int $code): Code {
+		return match ($code) {
+			\E_ERROR,
+			\E_CORE_ERROR,
+			\E_COMPILE_ERROR,
+			\E_USER_ERROR,
+			\E_RECOVERABLE_ERROR
+				=> Code::Error,
+
+			\E_PARSE
+				=> Code::Parce,
+
+			\E_WARNING,
+			\E_CORE_WARNING,
+			\E_COMPILE_WARNING,
+			\E_USER_WARNING,
+			\E_STRICT,
+			\E_DEPRECATED,
+			\E_USER_DEPRECATED
+				=> Code::Warning,
+
+			default => Code::User,
+		};
+	}
+
+	/**
+	* Преобразовать системные исключения в dl\Code.
+	*/
+	private static function convertException(\Throwable $e): Code {
+		return match ($e::class) {
+			'ErrorException'
+				=> self::convertError($e->getSeverity()),
+
+			'ArgumentCountError',
+			'ArithmeticError',
+			'DivisionByZeroError',
+			'Error',
+			'FiberError',
+			'TypeError',
+			'UnhandledMatchError',
+			'ValueError'
+				=> Code::Error,
+
+			'CompileError',
+			'ParseError'
+				=> Code::Parce,
+
+			// AssertionError,
+			// Exception
+			default => Code::Warning,
 		};
 	}
 }

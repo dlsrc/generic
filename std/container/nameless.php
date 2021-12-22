@@ -55,14 +55,14 @@ trait NamelessContainer {
 				\unlink($file);
 				Error::log(
 					Core::message('e_type', $file, \gettype(self::$_container[static::class])),
-					Error::DOMAIN
+					Code::Domain
 				);
 			}
 			else {
 				\unlink($file);
 				Error::log(
 					Core::message('e_class', $file, \get_class(self::$_container[static::class]), static::class),
-					Error::DOMAIN
+					Code::Domain
 				);
 			}
 		}

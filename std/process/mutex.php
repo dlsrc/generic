@@ -74,13 +74,13 @@ abstract class Mutex {
 	*/
 	public static function make(string $filename, string $project_id, bool $danger = false): self|Error {
 		if (!\file_exists($filename)) {
-			return Error::log(IO::message('e_file', $filename), Error::NOFILE);
+			return Error::log(IO::message('e_file', $filename), IOCode::Nofile);
 		}
 
 		$key = \ftok($filename, $project_id);
 
 		if (-1 == $key) {
-			return Error::log(Core::message('e_ftok'), Error::USER);
+			return Error::log(Core::message('e_ftok'), Code::User);
 		}
 
 		if (\extension_loaded('sysvsem')) {
@@ -98,7 +98,7 @@ abstract class Mutex {
 					$mtx->setpath(\dirname(__DIR__, 3), true);
 
 					if (!$mtx->pathExists()) {
-						return Error::log(Core::message('e_ext', 'process (sysvsem, shmop)'), Error::EXT);
+						return Error::log(Core::message('e_ext', 'process (sysvsem, shmop)'), Code::Ext);
 					}
 				}
 			}

@@ -19,20 +19,12 @@ declare(strict_types=1);
 namespace dl;
 
 final class Failure extends \Exception {
-	public readonly string $id;
-	public readonly string $ecode;
-	public readonly string $emesg;
-	public readonly string $context;
-	public readonly int    $type;
+	public readonly Error $error;
 
 	public function __construct(Error $e) {
 		parent::__construct($e->message, $e->code);
-		$this->file    = $e->file;
-		$this->line    = $e->line;
-		$this->id      = $e->id;
-		$this->ecode   = $e->getErrorCode();
-		$this->emesg   = $e->getErrorMessage();
-		$this->context = $e->getContext();
-		$this->type    = $e->type;
+		$this->file  = $e->file;
+		$this->line  = $e->line;
+		$this->error = $e;
 	}
 }

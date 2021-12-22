@@ -430,7 +430,7 @@ final class Boot {
 	*/
 	private function errorLoad(string $class): never {
 		throw new Failure(
-			Error::log(Core::message('e_load', $class), Error::NOCLASS, true)
+			Error::log(Core::message('e_load', $class), Code::Noclass, true)
 		);
 	}
 

@@ -118,7 +118,7 @@ final class FileMutex extends Mutex {
 	public function ​remove(): bool {
 		if ($this->status) {
 			if (!\unlink($this->sem)) {
-				Error::log(IO::message('e_unlink', $this->sem), Error::UNLINK);
+				Error::log(IO::message('e_unlink', $this->sem), IOCode::Unlink);
 				return false;
 			}
 

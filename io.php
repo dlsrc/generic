@@ -75,7 +75,7 @@ final class IO implements Sociable {
 						return true;
 					}
 
-					Error::log(self::message('e_make_dir', $dir), Error::MAKEDIR);
+					Error::log(self::message('e_make_dir', $dir), IOCode::Makedir);
 					return false;
 				}
 			}
@@ -84,7 +84,7 @@ final class IO implements Sociable {
 					if (!\file_exists($dir)) {
 						if (!\mkdir($dir, self::$_dir, true)) {
 							$mtx->release();
-							Error::log(self::message('e_make_dir', $dir), Error::MAKEDIR);
+							Error::log(self::message('e_make_dir', $dir), IOCode::Makedir);
 							return false;
 						}
 					}
@@ -121,7 +121,7 @@ final class IO implements Sociable {
 		}
 
 		if (!\is_dir($from)) {
-			Error::log(self::message('e_dir', $from), Error::NODIR, false);
+			Error::log(self::message('e_dir', $from), IOCode::Nodir, false);
 			return false;
 		}
 
@@ -169,7 +169,7 @@ final class IO implements Sociable {
 						\substr($out[$i], 0, \strrpos($out[$i], '/')),
 						\substr($in[$i], 0, \strrpos($in[$i], '/'))
 					),
-					Error::COPY,
+					IOCode::Copy,
 					false
 				);
 
@@ -179,7 +179,7 @@ final class IO implements Sociable {
 			\chmod($in[$i], self::$_file);
 
 			if ($unlink && !\unlink($out[$i])) {
-				Error::log(self::message('e_unlink', $out[$i]), Error::UNLINK);
+				Error::log(self::message('e_unlink', $out[$i]), IOCode::Unlink);
 			}
 		}
 
@@ -192,7 +192,7 @@ final class IO implements Sociable {
 
 			foreach ($from as $name) {
 				if (!\rmdir($name)) {
-					Error::log(self::message('e_rmdir', $name), Error::RMDIR);
+					Error::log(self::message('e_rmdir', $name), IOCode::Rmdir);
 				}
 			}
 		}
@@ -216,7 +216,7 @@ final class IO implements Sociable {
 					\substr($from, 0, \strrpos($from, '/')),
 					\substr($to, 0, \strrpos($to, '/'))
 				),
-				Error::COPY,
+				IOCode::Copy,
 				false
 			);
 
@@ -232,7 +232,7 @@ final class IO implements Sociable {
 	*/
 	public static function move(string $from, string $to): bool {
 		if (!file_exists($from)) {
-			Error::log(self::message('e_file', $from), Error::NOFILE);
+			Error::log(self::message('e_file', $from), IOCode::Nofile);
 			return false;
 		}
 
@@ -241,7 +241,7 @@ final class IO implements Sociable {
 		}
 
 		if (!\rename($from, $to)) {
-			Error::log(self::message('e_rename', $from, $to), Error::RENAME);
+			Error::log(self::message('e_rename', $from, $to), IOCode::Rename);
 			return false;
 		}
 
@@ -261,7 +261,7 @@ final class IO implements Sociable {
 	*/
 	public static function rm(string $fold, bool $dir = false): bool {
 		if (!\is_dir($fold)) {
-			Error::log(self::message('e_dir', $fold), Error::NODIR);
+			Error::log(self::message('e_dir', $fold), IOCode::Nodir);
 			return false;
 		}
 
@@ -287,7 +287,7 @@ final class IO implements Sociable {
 
 		foreach ($file as $name) {
 			if (!\unlink($name)) {
-				Error::log(self::message('e_unlink', $name), Error::UNLINK);
+				Error::log(self::message('e_unlink', $name), IOCode::Unlink);
 			}
 		}
 
@@ -299,7 +299,7 @@ final class IO implements Sociable {
 
 		foreach ($fold as $name) {
 			if (!\rmdir($name)) {
-				Error::log(self::message('e_rmdir', $name), Error::RMDIR);
+				Error::log(self::message('e_rmdir', $name), IOCode::Rmdir);
 			}
 		}
 
@@ -310,11 +310,11 @@ final class IO implements Sociable {
 		$len = \file_put_contents($file, $content);
 
 		if (FALSE === $len) {
-			Error::log(self::message('e_make_file', $file), Error::MAKEFILE);
+			Error::log(self::message('e_make_file', $file), IOCode::Makefile);
 			$len = -1;
 		}
 		elseif (!\chmod($file, self::$_file)) {
-			Error::log(self::message('e_chmod', $file), Error::CHMOD);
+			Error::log(self::message('e_chmod', $file), IOCode::Chmod);
 		}
 
 		return $len;
