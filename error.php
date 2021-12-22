@@ -42,8 +42,8 @@ enum Code: int implements ErrorCodifier {
 	case Exception = 13; // Исключение (для exception_handler)
 	case Logic     = 14; // Ошибка в логике
 	case Range     = 15; // Запрос несуществующего индекса
-	case NET       = 16; // Ошибка сети
-	case TCP       = 17; // Ошибка tcp-подключения
+	case Net       = 16; // Ошибка сети
+	case Tcp       = 17; // Ошибка tcp-подключения
 
 
 	public function isFatal() {
