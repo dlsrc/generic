@@ -22,7 +22,7 @@ final class Failure extends \Exception {
 	public readonly Error $error;
 
 	public function __construct(Error $e) {
-		parent::__construct($e->message, $e->code);
+		parent::__construct($e->message, $e->errno);
 		$this->file  = $e->file;
 		$this->line  = $e->line;
 		$this->error = $e;

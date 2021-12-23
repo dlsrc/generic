@@ -46,7 +46,7 @@ enum Code: int implements ErrorCodifier {
 	case Tcp       = 17; // Ошибка tcp-подключения
 
 
-	public function isFatal() {
+	public function isFatal(): bool {
 		return match ($this) {
 			self::Error, self::Fatal, self::Parse, self::Noclass => true,
 			default => false,
@@ -369,7 +369,7 @@ final class Error implements CallableState {
 			$message = $message.\PHP_EOL;
 		}
 
-		$trace['message'] = $mesg.\PHP_EOL.$message;
+		$trace['context'].= ' '.\PHP_EOL.$message;
 
 		self::$_log[$trace['id']] = new Error($trace);
 		self::fatal(self::$_log[$trace['id']]);
@@ -476,11 +476,13 @@ final class Error implements CallableState {
 	*/
 	public function getErrorMessage(): string {
 		if ('cli' == \PHP_SAPI) {
-			return $this->getErrorCode().' in file "'.$this->file.'" on line '.$this->line.': "'.$this->message.'"';
+			return $this->getErrorCode().' in file "'.$this->file.'" on line '.$this->line.': "'.$this->message.'"'.\PHP_EOL.
+			'Context: '.$this->context;
 		}
 
 		return $this->getErrorCode().' in file &laquo;'.\htmlspecialchars($this->file).
-		'&raquo; on line &laquo;'.$this->line.'&raquo;: &laquo;'.\htmlspecialchars($this->message).'&raquo;';
+		'&raquo; on line &laquo;'.$this->line.'&raquo;: &laquo;'.\htmlspecialchars($this->message).
+		'&raquo;<br>Context: '.$this->getContext();
 	}
 
 	/**
@@ -566,7 +568,7 @@ final class Error implements CallableState {
 		$this->id      = $state['id'];
 		$this->message = $state['message'];
 		$this->context = $state['context'];
-		$this->file    = $state['file'];
+		$this->file    = \strtr($state['file'], '\\', '/');
 		$this->line    = $state['line'];
 		$this->type    = $state['type'];
 		$this->code    = $state['code'];
@@ -579,7 +581,7 @@ final class Error implements CallableState {
 	/**
 	* Приведение к dl\Code.
 	*/
-	private function setCode(int $type, bool $fatal): Code {
+	private static function setCode(int $type, bool $fatal): Code {
 		$code = self::convertError($type);
 
 		if (Code::User == $code && $fatal) {
@@ -602,7 +604,7 @@ final class Error implements CallableState {
 				=> Code::Error,
 
 			\E_PARSE
-				=> Code::Parce,
+				=> Code::Parse,
 
 			\E_WARNING,
 			\E_CORE_WARNING,
@@ -637,7 +639,7 @@ final class Error implements CallableState {
 
 			'CompileError',
 			'ParseError'
-				=> Code::Parce,
+				=> Code::Parse,
 
 			// AssertionError,
 			// Exception
