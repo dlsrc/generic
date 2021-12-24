@@ -20,13 +20,23 @@ declare(strict_types=1);
 namespace dl;
 
 interface PreferredCase {
-	public static function byDefault(): self;
-	public static function now(self|null $case = null): self;
+	public static function byDefault(): static;
+	public static function now(self|null $case = null): static;
+	public static function nowByName(string $name): static;
+	public static function name(): string;
 	public function current(): bool;
 }
 
+trait DefaultCase {
+	final public static function byDefault(): static {
+		return self::cases()[0];
+	}
+}
+
 trait CurrentCase {
-	final public static function now(PreferredCase|null $case = null): self {
+	use CaseSearch;
+
+	final public static function now(PreferredCase|null $case = null): static {
 		static $current = null;
 
 		if (null == $case || $case::class != self::class) {
@@ -36,6 +46,14 @@ trait CurrentCase {
 		$previous = $current ?? self::byDefault();
 		$current  = $case;
 		return $previous;
+	}
+
+	final public static function nowByName(string $name): static {
+		return self::now(self::byName($name));
+	}
+
+	final public static function name(): string {
+		return self::now()->name;
 	}
 
 	final public function current(): bool {

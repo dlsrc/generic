@@ -8,12 +8,7 @@
 
     ------------------------------------------------------------------------
 
-    enum dl\Mode
-	Преречисление наиболее общих режимов работы для всех библиотек и
-	приложений.	Рекомендуется использовать, если приложения не имеют
-	своей собственной системы классификации режимов работы.
-	Поддерживает интерфейс выбора предпочитаемого (текущего) режима
-	\dl\PreferredCase.
+	trait dl\CaseSearch
 
     ------------------------------------------------------------------------
 
@@ -23,12 +18,22 @@
 declare(strict_types=1);
 namespace dl;
 
-enum Mode implements PreferredCase {
-	use DefaultCase;
-	use CurrentCase;
+trait CaseSearch {
+    final public static function byName(string $name): static|null {
+        foreach(self::cases() as $case) {
+            if ($name == $case->name) {
+                return $case;
+            }
+        }
 
-	case Product;
-	case Develop;
-	case Test;
-	case Error;
+        return null;
+    }
+
+    final public static function inCases(string $name, array $cases): bool {
+        if (!$case = self::byName($name)) {
+			return false;
+		}
+
+		return \in_array($case, $cases);
+    }
 }

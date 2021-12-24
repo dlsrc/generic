@@ -91,7 +91,7 @@ trait Informer {
 			$def_class = self::_langclass($def);
 
 			if ($def_path = Boot::find($def_class, false)) {
-				$path = \str_replace($def->value.'.php', $lang->value.'.php', $def_path);
+				$path = \str_replace($def->name.'.php', $lang->name.'.php', $def_path);
 					
 				if (\is_readable($path)) {
 					//include_once $path;
@@ -174,10 +174,10 @@ trait Informer {
 
 	private static function _langclass(Lang $lang): string {
 		if (false === ($pos = \strrpos(self::class, '\\'))) {
-			return $lang->value.'\\'.self::class;
+			return $lang->name.'\\'.self::class;
 		}
 		else {
-			return \substr(self::class, 0, $pos).'\\'.$lang->value.\strrchr(self::class, '\\');
+			return \substr(self::class, 0, $pos).'\\'.$lang->name.\strrchr(self::class, '\\');
 		}
 	}
 }

@@ -21,47 +21,23 @@ namespace dl;
 enum Lang: string implements PreferredBackedCase {
 	use CurrentBackedCase;
 
-	case en = 'en';
-	case ru = 'ru';
-	case ja = 'ja';
-	case de = 'de';
-	case es = 'es';
-	case fr = 'fr';
-	case pt = 'pt';
-	case it = 'it';
-	case ar = 'ar';
-	case zh = 'zh';
-	case uk = 'uk';
+	case ru = '1';
+	case en = '2';
+	case ar = '3';
+	case es = '4';
+	case zh = '5';
+	case fr = '6';
+	case de = '7';
+	case ja = '8';
+	case it = '9';
+	case pt = '10';
+	case uk = '11';
 
 	public static function byDefault(): self {
 		return self::en;
 	}
 
-	public static function inCases(string $name, array $cases): bool {
-		if (!$case = self::tryFrom($name)) {
-			return false;
-		}
-
-		return \in_array($case, $cases);
-	}
-
-	public function id(): string {
-		return match($this) {
-			self::ru => '1',
-			self::en => '2',
-			self::ar => '3',
-			self::es => '4',
-			self::zh => '5',
-			self::fr => '6',
-			self::de => '7',
-			self::ja => '8',
-			self::it => '9',
-			self::pt => '10',
-			self::uk => '11',
-		};
-	}
-
-	public function name(): string {
+	public function title(): string {
 		return match($this) {
 			self::en => 'English',
 			self::ru => 'Русский',

@@ -61,8 +61,8 @@ final class Registry {
 		include_once __DIR__.'/errorlog.php';
 		include_once __DIR__.'/io.php';
 		include_once __DIR__.'/exporter.php';
-		include_once __DIR__.'/lang/core.'.Lang::get().'.php';
-		include_once __DIR__.'/lang/io.'.Lang::get().'.php';
+		include_once __DIR__.'/lang/core.'.Lang::name().'.php';
+		include_once __DIR__.'/lang/io.'.Lang::name().'.php';
 		include_once __DIR__.'/std/process/mutex.php';
 
 		if (\extension_loaded('sysvsem')) {
