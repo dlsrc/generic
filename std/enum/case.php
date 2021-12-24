@@ -34,7 +34,7 @@ trait DefaultCase {
 }
 
 trait CurrentCase {
-	use CaseSearch;
+	use SearchingCase;
 
 	final public static function now(PreferredCase|null $case = null): static {
 		static $current = null;

@@ -44,6 +44,7 @@ final class Registry {
 		}
 
 		// Не менять последовательность подключения
+		include_once __DIR__.'/std/enum/search.php';
 		include_once __DIR__.'/std/enum/case.php';
 		include_once __DIR__.'/std/enum/backedcase.php';
 		include_once __DIR__.'/lang.php';

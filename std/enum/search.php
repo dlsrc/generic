@@ -8,7 +8,7 @@
 
     ------------------------------------------------------------------------
 
-	trait dl\CaseSearch
+	trait dl\SearchingCase
 
     ------------------------------------------------------------------------
 
@@ -18,7 +18,7 @@
 declare(strict_types=1);
 namespace dl;
 
-trait CaseSearch {
+trait SearchingCase {
     final public static function byName(string $name): static|null {
         foreach(self::cases() as $case) {
             if ($name == $case->name) {

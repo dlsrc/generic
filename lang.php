@@ -33,7 +33,7 @@ enum Lang: string implements PreferredBackedCase {
 	case pt = '10';
 	case uk = '11';
 
-	public static function byDefault(): self {
+	public static function byDefault(): static {
 		return self::en;
 	}
 
