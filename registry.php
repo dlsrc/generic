@@ -23,7 +23,12 @@ namespace dl;
 
 final class Registry {
 	private const PATTERN =
-	'/\s+(?:(?:abstract\s+|final\s+)?class|interface|trait|enum)\s+(\w+)/is';
+	'/(?:(?:abstract|final|)class|interface|trait|enum)
+	\s+(\w+)
+	(?:\s*\:\s+(?:int|string)|
+	\s*\:\s+(?:int|string)\s+implements\s+[^\{]*\w|
+	\s+implements\s+[^\{]*\w|\s+extends\s+[^\{]*\w|)
+	\s+\{/xis';
 
 	// Флаг пройденной перезагрузки реестра.
 	private static bool $done = false;
