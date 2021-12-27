@@ -598,24 +598,28 @@ final class Error implements CallableState {
 		return match ($code) {
 			\E_ERROR,
 			\E_CORE_ERROR,
-			\E_COMPILE_ERROR,
-			\E_USER_ERROR,
 			\E_RECOVERABLE_ERROR
 				=> Code::Error,
 
-			\E_PARSE
+			\E_PARSE,
+			\E_COMPILE_ERROR
 				=> Code::Parse,
 
 			\E_WARNING,
 			\E_CORE_WARNING,
 			\E_COMPILE_WARNING,
-			\E_USER_WARNING,
 			\E_STRICT,
-			\E_DEPRECATED,
-			\E_USER_DEPRECATED
+			\E_DEPRECATED
 				=> Code::Warning,
 
-			default => Code::User,
+			\E_USER_ERROR
+				=> Code::Fatal,
+
+			\E_USER_WARNING,
+			\E_USER_DEPRECATED
+				 => Code::User,
+
+			default => Code::Notice,
 		};
 	}
 
@@ -641,9 +645,11 @@ final class Error implements CallableState {
 			'ParseError'
 				=> Code::Parse,
 
-			// AssertionError,
-			// Exception
-			default => Code::Warning,
+			'AssertionError',
+			'Exception'
+				=> Code::Warning,
+
+			default => Code::User,
 		};
 	}
 }
