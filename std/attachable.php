@@ -21,12 +21,16 @@
 declare(strict_types=1);
 namespace dl;
 
-// Attachable container
+/**
+* Attachable container interface
+*/
 interface Attachable {
 	public function getState(Extendable $ext): array;
 }
 
-// Attachable implementation
+/**
+* Attachable implementation
+*/
 trait PropertyKit {
 	final public function getState(Extendable $ext): array {
 		$vars = \get_object_vars($this);

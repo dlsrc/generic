@@ -21,13 +21,17 @@
 declare(strict_types=1);
 namespace dl;
 
-// Extendable container
+/**
+* Extendable container
+*/
 interface Extendable {
 	public function attach(Attachable $att, bool $new_only = false): void;
 	public function getExpectedProperties(): array;
 }
 
-// Extendable implementation
+/**
+* Extendable implementation
+*/
 trait PropertyCollector {
 	abstract protected function getAttachedPropertyHandler(string $property): callable|null;
 

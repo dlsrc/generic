@@ -22,12 +22,16 @@
 declare(strict_types=1);
 namespace dl;
 
-// Named container
+/**
+* Named container interface
+*/
 interface Named {
 	public function getName(): string;
 }
 
-// Named implementation
+/**
+* Named implementation
+*/
 trait ContainerName {
 	private string $_name;
 
@@ -39,7 +43,7 @@ trait ContainerName {
 trait NamedContainerGetter {
 	use PropertyContainer;
 
-	final public static function get(string $name = ''): self {
+	final public static function get(string $name = ''): static {
 		if ('' == $name) {
 			$name = static::class;
 		}
@@ -57,17 +61,21 @@ trait NamedContainerGetter {
 	}
 }
 
-// ImportableNamed container
+/**
+* ImportableNamed container interface
+*/
 interface ImportableNamed {
-	public static function load(string $file, string $name = ''): self;
-	public static function find(string $file, string $name = ''): self|null;
+	public static function load(string $file, string $name = ''): static;
+	public static function find(string $file, string $name = ''): static|null;
 }
 
-// ImportableNamed implementation
+/**
+* ImportableNamed implementation
+*/
 trait NamedContainer {
 	use NamedContainerGetter;
 	
-	final public static function load(string $file, string $name = ''): self {
+	final public static function load(string $file, string $name = ''): static {
 		if ('' == $name) {
 			$name = static::class;
 		}
@@ -112,7 +120,7 @@ trait NamedContainer {
 		return self::$_container[$name];
 	}
 
-	final public static function find(string $file, string $name = ''): self|null {
+	final public static function find(string $file, string $name = ''): static|null {
 		if ('' == $name) {
 			$name = static::class;
 		}

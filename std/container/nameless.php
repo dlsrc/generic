@@ -23,23 +23,27 @@ namespace dl;
 trait NamelessContainerGetter {
 	use PropertyContainer;
 
-	final public static function get(): self {
+	final public static function get(): static {
 		self::$_container[static::class] ??= new static;
 		return self::$_container[static::class];
 	}
 }
 
-// NamelessImportable container
+/**
+* NamelessImportable container interface
+*/
 interface NamelessImportable {
-	public static function load(string $file): self;
-	public static function find(string $file): self|null;
+	public static function load(string $file): static;
+	public static function find(string $file): static|null;
 }
 
-// NamelessImportable implementation
+/**
+* NamelessImportable implementation
+*/
 trait NamelessContainer {
 	use NamelessContainerGetter;
 
-	final public static function load(string $file): self {
+	final public static function load(string $file): static {
 		if (isset(self::$_container[static::class])) {
 			return self::$_container[static::class];
 		}
@@ -80,7 +84,7 @@ trait NamelessContainer {
 		return self::$_container[static::class];
 	}
 
-	final public static function find(string $file): self|null {
+	final public static function find(string $file): static|null {
 		if (isset(self::$_container[static::class])) {
 			return self::$_container[static::class];
 		}

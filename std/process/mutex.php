@@ -72,7 +72,7 @@ abstract class Mutex {
 	/**
 	* Получение объекта семафора на основании файлового пути и идентификатора проекта.
 	*/
-	public static function make(string $filename, string $project_id, bool $danger = false): self|Error {
+	public static function make(string $filename, string $project_id, bool $danger = false): static|Error {
 		if (!\file_exists($filename)) {
 			return Error::log(IO::message('e_file', $filename), IOCode::Nofile);
 		}
@@ -110,7 +110,7 @@ abstract class Mutex {
 	/**
 	* Получение объекта семафора по ключу System V IPC.
 	*/
-	public static function get(int $key): self {
+	public static function get(int $key): static {
 		self::$semaphore[$key] ??= new static($key);
 		return self::$semaphore[$key];
 	}

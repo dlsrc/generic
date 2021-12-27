@@ -19,13 +19,17 @@
 declare(strict_types=1);
 namespace dl;
 
-// Mutable properties container
+/**
+* Mutable properties container
+*/
 interface Mutable extends Immutable {
 	public function __set(string $name, mixed $value): void;
 	public function clean(): void;
 }
 
-// Muttable implementation
+/**
+* Muttable implementation
+*/
 trait PropertySetter {
 	use PropertyGetter;
 

@@ -19,13 +19,17 @@
 declare(strict_types=1);
 namespace dl;
 
-// Immutable properties container
+/**
+* Immutable properties container
+*/
 interface Immutable {
 	public function __get(string $name): mixed;
 	public function __isset(string $name): bool;
 }
 
-// Immutable implementation
+/**
+* Immutable implementation
+*/
 trait PropertyGetter {
 	abstract protected function initialize(): void;
 

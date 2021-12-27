@@ -19,13 +19,17 @@
 declare(strict_types=1);
 namespace dl;
 
-// Storable container
+/**
+* Storable container
+*/
 interface Storable {
 	public function getFilename(): string;
 	public function setFilename(string $file): void;
 }
 
-// Storable implementation
+/**
+* Storable implementation
+*/
 trait Filename {
 	private string $_file;
 
