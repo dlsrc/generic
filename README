@@ -1,0 +1,7 @@
+Generic is a library that contains regularly used classes,
+interfaces and enumerations, such as containers of mutable
+and immutable properties, error handling and logging,
+export of variables to executable code, autoloading, mutexes,
+preferences in enumerations, support for multilingual messages
+and a number of other features which will make life easier and
+development more fun.
