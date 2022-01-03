@@ -1,0 +1,23 @@
+{
+    "name": "dl/generic",
+    "type": "library",
+    "description": "Generic interfaces, classes and enumerations that are regularly used in everyday work",
+    "license": "MIT",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/dlsrc/generic"
+        }
+    ],
+    "authors": [
+        {
+            "name": "Dmitry Lebedev",
+            "email": "dl@adios.ru",
+            "homepage": "https://adios.ru",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.1"
+    }
+}
