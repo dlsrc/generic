@@ -65,6 +65,7 @@ final class Registry {
 		include_once __DIR__.'/core.php';
 		include_once __DIR__.'/error.php';
 		include_once __DIR__.'/errorlog.php';
+		include_once __DIR__.'/failure.php';
 		include_once __DIR__.'/io.php';
 		include_once __DIR__.'/exporter.php';
 		include_once __DIR__.'/lang/core.'.Lang::name().'.php';
