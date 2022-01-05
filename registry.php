@@ -258,7 +258,7 @@ final class Registry {
 
 			foreach ($list as $val) {
 				if (\is_dir($dir[$i].$val)) {
-					if ('.' == $val || '..' == $val) {
+					if ('.' == $val || '..' == $val || '.git' == $val) {
 						continue;
 					}
 
