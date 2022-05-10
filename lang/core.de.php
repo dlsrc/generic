@@ -20,6 +20,8 @@ namespace dl\de;
 
 final class Core extends \dl\Getter {
 	protected function initialize(): void {
+		$this->_property['success']    = 'Alles ist okay.';
+
 		$this->_property['e_ext']      =
 		'Das Programm benötigt die Erweiterung "{0}", um zu funktionieren.';
 
@@ -38,7 +40,7 @@ final class Core extends \dl\Getter {
 		$this->_property['h_registry'] =
 		'Vollständige Registrierung von Klassen und Schnittstellen.';
 
-		$this->_property['e_ftok']  =
+		$this->_property['e_ftok']     =
 		'Der Pfad "{0}" und die Projekt-ID "{1}" können nicht in den '.
 		'System-V-IPC-Schlüssel konvertiert werden.';
 

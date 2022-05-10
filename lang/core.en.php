@@ -20,6 +20,8 @@ namespace dl\en;
 
 final class Core extends \dl\Getter {
 	protected function initialize(): void {
+		$this->_property['success']    = 'All correct.';
+
 		$this->_property['e_ext']      =
 		'The program requires the extension "{0}" to work.';
 
@@ -37,7 +39,7 @@ final class Core extends \dl\Getter {
 		$this->_property['h_registry'] =
 		'Complete registry of classes and interfaces.';
 
-		$this->_property['e_ftok']  =
+		$this->_property['e_ftok']     =
 		'Unable to convert path "{0}" and project ID "{1}" to System V IPC key.';
 
 		$this->_property['w_trace']    = 'Trace';

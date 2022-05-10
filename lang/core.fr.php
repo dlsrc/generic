@@ -20,6 +20,8 @@ namespace dl\fr;
 
 final class Core extends \dl\Getter {
 	protected function initialize(): void {
+		$this->_property['success']    = 'Tout va bien.';
+
 		$this->_property['e_ext']      =
 		'Le programme nécessite l\'extension "{0}" pour fonctionner.';
 
@@ -37,7 +39,7 @@ final class Core extends \dl\Getter {
 		$this->_property['h_registry'] =
 		'Registre complet des classes et des interfaces.';
 
-		$this->_property['e_ftok']  =
+		$this->_property['e_ftok']     =
 		'Impossible de convertir le chemin "{0}" et l\'ID de projet "{1}" '.
 		'en clé IPC System V. ';
 

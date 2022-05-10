@@ -20,6 +20,8 @@ namespace dl\ja;
 
 final class Core extends \dl\Getter {
 	protected function initialize(): void {
+		$this->_property['success']    = 'すべてが大丈夫です。';
+
 		$this->_property['e_ext']      =
 		'プログラムが機能するには、拡張子 「{0}」が必要です。';
 
@@ -36,7 +38,7 @@ final class Core extends \dl\Getter {
 
 		$this->_property['h_registry'] = 'クラスとインターフェイスの完全なレジストリ。';
 
-		$this->_property['e_ftok']  =
+		$this->_property['e_ftok']     =
 		'パス "{0}"とプロジェクトID "{1}"をSystemVIPCキーに変換できません。';
 
 		$this->_property['w_trace']    = '痕跡';
