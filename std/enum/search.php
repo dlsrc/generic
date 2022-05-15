@@ -18,7 +18,15 @@
 declare(strict_types=1);
 namespace dl;
 
+/**
+* Методы поиска варианта перечисления в текущем перечислении.
+*/
 trait SearchingCase {
+    /**
+    * Найти вариант перечисления по имени варианта для текущего типа.
+    * Вернуть вариант перечисления с указанным именем,
+    * либо значение NULL, если в текущем перечислении вариант отсутствует.
+    */
     final public static function byName(string $name): static|null {
         foreach(self::cases() as $case) {
             if ($name == $case->name) {
@@ -29,6 +37,12 @@ trait SearchingCase {
         return null;
     }
 
+    /**
+    * Проверить значения массива на принадлежность хотя бы одного их них
+    * к варианту текущего перечисления.
+    * Первый аргумент - строка имени варианта перечисления.
+    * Второй аргумент - массив в котором должен присутствовать вариант перечисления.
+    */
     final public static function inCases(string $name, array $cases): bool {
         if (!$case = self::byName($name)) {
 			return false;

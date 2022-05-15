@@ -61,7 +61,7 @@ interface Exportable extends Storable, CallableState {
 	*
 	* Стандартный метод, в котором нужно реализовать экспорт,
 	* на основе соответствия значения, указанного выше приватного свойства,
-	* флагам Save::NoError и Save::Destruct.
+	* флагам dl\Save::NoError и dl\Save::Destruct.
 	*/
 	public function __destruct();
 
@@ -73,8 +73,8 @@ interface Exportable extends Storable, CallableState {
 	*        вычисленный при создании объекта.
 	* save - флаг типа dl\Save, означающий как и когда выполняется експорт.
 	*        Необходимо передать одно из значений:
-	*        Save::NoError, Save::Destruct или Save::Now.
-	*        По умолчанию Save::NoError.
+	*        dl\Save::NoError, dl\Save::Destruct или dl\Save::Now.
+	*        По умолчанию dl\Save::NoError.
 	*
 	* Класс, реализующий интерфейс dl\Exportable, должен самостоятельно
 	* вычислять файл по умолчанию для сохранения объектов на его основе.
@@ -88,8 +88,8 @@ interface Exportable extends Storable, CallableState {
 	*
 	* save - флаг типа dl\Save, означающий как и когда выполняется експорт.
 	*        Необходимо передать одно из значений:
-	*        Save::NoError, Save::Destruct или Save::Now.
-	*        По умолчанию Save::NoError.
+	*        dl\Save::NoError, dl\Save::Destruct или dl\Save::Now.
+	*        По умолчанию dl\Save::NoError.
 	*
 	* Файл по умолчанию должен определяется реализацией конкретного класса.
 	*/
@@ -101,8 +101,8 @@ interface Exportable extends Storable, CallableState {
 	*
 	* save - флаг типа dl\Save, означающий как и когда выполняется експорт.
 	*        Необходимо передать одно из значений:
-	*        Save::NoError, Save::Destruct или Save::Now.
-	*        По умолчанию Save::Now.
+	*        dl\Save::NoError, dl\Save::Destruct или dl\Save::Now.
+	*        По умолчанию dl\Save::Now.
 	*
 	* Файл по умолчанию должен определяется реализацией конкретного класса.
 	*/
